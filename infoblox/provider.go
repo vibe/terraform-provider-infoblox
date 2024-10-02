@@ -17,7 +17,7 @@ import (
 // Common parameters
 const (
 	ttlUndef            = math.MinInt32
-	eaNameForInternalId = "Terraform Internal ID"
+	eaNameForInternalId = "Notes"
 	eaNameForTenantId   = "Tenant ID"
 	altIdSeparator      = "|"
 
