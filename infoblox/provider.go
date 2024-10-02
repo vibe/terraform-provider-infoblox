@@ -147,9 +147,15 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("INFOBLOX_SERVER", nil),
 				Description: "Infoblox server IP address.",
 			},
+			"ibapauth": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("INFOBLOX_COOKIE", nil),
+				Description: "Auth Cookie to authenticate with the Infoblox server.",
+			},
 			"username": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("INFOBLOX_USERNAME", nil),
 				Description: "User to authenticate with Infoblox server.",
 			},
@@ -235,10 +241,10 @@ func Provider() *schema.Provider {
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 
-	if d.Get("password") == "" {
+	if d.Get("password") == "" && d.Get("ibapauth") == "" {
 		return nil, diag.Diagnostics{diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Export the required INFOBLOX_PASSWORD environment variable to set the password.",
+			Summary:  "Export the required INFOBLOX_PASSWORD or INFOBLOX_COOKIE environment variable to set the credentials.",
 		}}
 	}
 
@@ -252,6 +258,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	authConfig := ibclient.AuthConfig{
 		Username: d.Get("username").(string),
 		Password: d.Get("password").(string),
+		Ibapauth: d.Get("ibapauth").(string),
 	}
 
 	transportConfig := ibclient.TransportConfig{
